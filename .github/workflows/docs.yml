@@ -5,6 +5,9 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+env:
+  CUSTOM_DOMAIN: docs.aetherui.com
+
 permissions:
   contents: read
   pages: write
@@ -27,6 +30,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: Build documentation
         run: ./gradlew dokkaHtml
+      - name: Configure custom domain
+        run: echo "$CUSTOM_DOMAIN" > build/dokka/html/CNAME
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload documentation
