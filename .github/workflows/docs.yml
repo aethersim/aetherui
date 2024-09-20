@@ -15,9 +15,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
     environment:
-      name: github-pages
+      name: Documentation (GitHub Pages)
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
