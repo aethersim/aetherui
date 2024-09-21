@@ -20,12 +20,12 @@ abstract class UIComponent : UIParentable, UIRenderable {
     var minimumSize = Dimension(0u, 0u)
         set(minimumSize) {
             field = minimumSize
-            // TODO Repack parent
+            parent?.pack()
         }
     var desiredSize: Dimension? = null
         set(desiredSize) {
-            field = minimumSize
-            // TODO Repack parent
+            field = desiredSize
+            parent?.pack()
         }
     // TODO Bounding box
 
