@@ -51,43 +51,44 @@ abstract class Color protected constructor(alpha: Float) {
         override fun toRGB(): RGB = this
 
         override fun toHSL(): HSL {
-            val normalizedComponents = getNormalizedComponents();
+            val normalizedComponents = getNormalizedComponents()
             val componentExtrema = getComponentExtrema(normalizedComponents)
-            val (minimumComponent, maximumComponent) = componentExtrema
             val (chroma, hue) = getHueAndChroma(normalizedComponents, componentExtrema)
-            val lightness = (maximumComponent + minimumComponent) / 2;
+            val lightness = (componentExtrema.maximum + componentExtrema.minimum) / 2;
             val saturation = if (lightness == 0f || lightness == 1f) 0f else chroma / (1 - abs(2 * lightness - 1))
 
             return HSL(hue, saturation, lightness, alpha)
         }
 
-        private fun getNormalizedComponents(): Triple<Float, Float, Float> {
-            return Triple(
+        private data class NormalizedRGB(val red: Float, val green: Float, val blue: Float)
+
+        private data class RGBExtrema(val minimum: Float, val maximum: Float)
+
+        private fun getNormalizedComponents(): NormalizedRGB {
+            return NormalizedRGB(
                 red.toFloat() / 255,
                 green.toFloat() / 255,
                 blue.toFloat() / 255,
             )
         }
 
-        private fun getComponentExtrema(normalizedComponents: Triple<Float, Float, Float>): Pair<Float, Float> {
-            val (normalizedRed, normalizedGreen, normalizedBlue) = normalizedComponents
-            return Pair(
-                minOf(normalizedRed, normalizedGreen, normalizedBlue),
-                maxOf(normalizedRed, normalizedGreen, normalizedBlue)
+        private fun getComponentExtrema(normalizedComponents: NormalizedRGB): RGBExtrema {
+            return RGBExtrema(
+                minOf(normalizedComponents.red, normalizedComponents.green, normalizedComponents.blue),
+                maxOf(normalizedComponents.red, normalizedComponents.green, normalizedComponents.blue)
             )
         }
 
-        private fun getHueAndChroma(normalizedComponents: Triple<Float, Float, Float>, componentExtrema: Pair<Float, Float>): Pair<Float, Float> {
-            val (normalizedRed, normalizedGreen, normalizedBlue) = normalizedComponents
-            val (minimumComponent, maximumComponent) = componentExtrema
-            val chroma = maximumComponent - minimumComponent
+        private fun getHueAndChroma(
+            normalizedComponents: NormalizedRGB, componentExtrema: RGBExtrema
+        ): Pair<Float, Float> {
+            val chroma = componentExtrema.maximum - componentExtrema.minimum
             return Pair(
-                chroma,
-                60 * when {
+                chroma, 60 * when {
                     chroma == 0f -> 0f
-                    maximumComponent == normalizedRed -> ((normalizedGreen - normalizedBlue) / chroma) % 6
-                    maximumComponent == normalizedGreen -> ((normalizedBlue - normalizedRed) / chroma) + 2
-                    else -> ((normalizedRed - normalizedGreen) / chroma) + 4
+                    componentExtrema.maximum == normalizedComponents.red -> ((normalizedComponents.green - normalizedComponents.blue) / chroma) % 6
+                    componentExtrema.maximum == normalizedComponents.green -> ((normalizedComponents.blue - normalizedComponents.red) / chroma) + 2
+                    else -> ((normalizedComponents.red - normalizedComponents.green) / chroma) + 4
                 }
             )
         }
@@ -112,7 +113,7 @@ abstract class Color protected constructor(alpha: Float) {
      * @property saturation The saturation component for the color, from `0f` to `1f`
      * @property lightness The lightness component for the color, from `0f` to `1f`
      */
-    class HSL(hue: Float, saturation: Float, lightness: Float, alpha: Float = 1f): Color(alpha) {
+    class HSL(hue: Float, saturation: Float, lightness: Float, alpha: Float = 1f) : Color(alpha) {
         val hue: Float = Math.clamp(hue, 0f, 360f)
         val saturation: Float = Math.clamp(saturation, 0f, 1f)
         val lightness: Float = Math.clamp(lightness, 0f, 1f)
@@ -132,7 +133,11 @@ abstract class Color protected constructor(alpha: Float) {
             val (redPrime, greenPrime, bluePrime) = componentPrimes
             val m = lightness - (chroma / 2)
 
-            return RGB(((redPrime + m) * 255).roundToInt().toUByte(), ((greenPrime + m) * 255).roundToInt().toUByte(), ((bluePrime + m) * 255).roundToInt().toUByte())
+            return RGB(
+                ((redPrime + m) * 255).roundToInt().toUByte(),
+                ((greenPrime + m) * 255).roundToInt().toUByte(),
+                ((bluePrime + m) * 255).roundToInt().toUByte()
+            )
         }
 
         override fun toHSL(): HSL = this
@@ -141,7 +146,9 @@ abstract class Color protected constructor(alpha: Float) {
             return if (alpha == 1f) {
                 String.format("hsl(%.1f°, %.1f%%, %.1f%%)", hue, saturation * 100, lightness * 100);
             } else {
-                String.format("hsla(%.1f°, %.1f%%, %.1f%%, %.1f%%)", hue, saturation * 100, lightness * 100, alpha * 100);
+                String.format(
+                    "hsla(%.1f°, %.1f%%, %.1f%%, %.1f%%)", hue, saturation * 100, lightness * 100, alpha * 100
+                );
             }
         }
     }
