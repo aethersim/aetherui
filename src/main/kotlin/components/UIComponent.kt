@@ -1,6 +1,7 @@
 package com.aetherui.components
 
-import com.aetherui.layout.Dimension
+import com.aetherui.layout.Constraints
+import com.aetherui.layout.Dimensions
 import com.aetherui.layout.Position
 
 /**
@@ -8,25 +9,14 @@ import com.aetherui.layout.Position
  *
  * @property position The position of the component within its container
  * @property size The actual dimensions of the component
- * @property minimumSize The minimum allowed dimensions for the component
- * @property desiredSize The desired dimensions for the component, which may or may not be honored depending on the
- *                       underlying container layout
+ * @property constraints The constraints to apply when building component layouts
  */
 abstract class UIComponent : UIParentable, UIRenderable {
     var position = Position(0, 0)
         protected set
-    var size = Dimension(0u, 0u)
+    var size = Dimensions(0, 0)
         protected set
-    var minimumSize = Dimension(0u, 0u)
-        set(minimumSize) {
-            field = minimumSize
-            parent?.pack()
-        }
-    var desiredSize: Dimension? = null
-        set(desiredSize) {
-            field = desiredSize
-            parent?.pack()
-        }
+    val constraints = Constraints()
     // TODO Bounding box
 
     override var parent: UIContainer? = null

@@ -1,7 +1,7 @@
 package com.aetherui.providers.awt
 
 import com.aetherui.components.UIWindow
-import com.aetherui.layout.Dimension
+import com.aetherui.layout.Dimensions
 import com.aetherui.providers.Provider
 
 object AWTProvider: Provider() {
@@ -19,7 +19,7 @@ object AWTProvider: Provider() {
         internalFrames[window]?.isVisible = visibility
     }
 
-    override fun setWindowSize(window: UIWindow, size: Dimension) {
+    override fun setWindowSize(window: UIWindow, size: Dimensions) {
         internalFrames[window]?.size = java.awt.Dimension(size.width.toInt(), size.height.toInt())
     }
 }

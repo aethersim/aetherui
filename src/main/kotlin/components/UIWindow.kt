@@ -1,6 +1,6 @@
 package com.aetherui.components
 
-import com.aetherui.layout.Dimension
+import com.aetherui.layout.Dimensions
 import com.aetherui.providers.Provider
 
 class UIWindow(title: String): UIRenderable {
@@ -14,7 +14,7 @@ class UIWindow(title: String): UIRenderable {
             field = visible
             Provider.current.setWindowVisibility(this, visible)
         }
-    var size: Dimension = Dimension(600u, 480u)
+    var size: Dimensions = Dimensions(600, 480)
         set(size) {
             field = size
             Provider.current.setWindowSize(this, size)

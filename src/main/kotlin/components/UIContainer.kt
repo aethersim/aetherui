@@ -2,7 +2,7 @@ package com.aetherui.components
 
 import com.aetherui.layout.Orientation
 
-abstract class UIContainer: UIComponent() {
+abstract class UIContainer(val orientation: Orientation): UIComponent() {
     abstract val components: List<UIComponent>
 
     override var parentWindow: UIWindow? = null

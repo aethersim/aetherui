@@ -8,4 +8,9 @@ package com.aetherui.layout
  * @property width The horizontal dimension
  * @property height The vertical dimension
  */
-data class Dimension(val width: UInt, val height: UInt)
+data class Dimensions(val width: Int, val height: Int) {
+    init {
+        require(width >= 0) { "Width must be positive" }
+        require(height >= 0) { "Height must be positive" }
+    }
+}
