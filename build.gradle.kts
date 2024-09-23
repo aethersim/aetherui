@@ -1,6 +1,5 @@
 import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URI
-import java.net.URL
 
 plugins {
     kotlin("jvm") version "2.0.20"
@@ -9,6 +8,10 @@ plugins {
 
 group = "com.aetherui"
 version = "0.1.0-alpha"
+
+kotlin {
+    jvmToolchain(21)
+}
 
 repositories {
     mavenCentral()
@@ -21,9 +24,6 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-}
-kotlin {
-    jvmToolchain(21)
 }
 
 tasks.withType<DokkaTask>().configureEach {

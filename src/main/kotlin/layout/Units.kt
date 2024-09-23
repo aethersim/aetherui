@@ -33,31 +33,4 @@ abstract class Units {
             return if (first.rectify().value > second.rectify().value) first else second
         }
     }
-//    abstract fun inPixels(spaceAvailable: Int): Int
-//
-//    abstract class DefiniteUnits : Units() {
-//
-//    }
-//
-//    object None: Units() {
-//        override fun inPixels(spaceAvailable: Int) = 0
-//    }
-//
-//    object Auto: Units() {
-//        override fun inPixels(spaceAvailable: Int): Int = spaceAvailable
-//    }
-//
-//    data class Scalar(val value: Int): DefiniteUnits() {
-//        override fun inPixels(spaceAvailable: Int): Int = value
-//    }
-//
-//    data class Ratio(val ratio: Float): DefiniteUnits() {
-//        init {
-//            require(ratio in 0.0..1.0) { "Ratio must be between 0 and 1" }
-//        }
-//
-//        override fun inPixels(spaceAvailable: Int): Int {
-//            return (spaceAvailable * ratio).toInt()
-//        }
-//    }
 }
