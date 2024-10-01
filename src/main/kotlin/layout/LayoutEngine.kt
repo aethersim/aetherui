@@ -5,17 +5,12 @@ import com.aetherui.components.UIContainer
 import com.aetherui.components.UIWindow
 
 class LayoutEngine {
-
-    fun pack(container: UIWindow): Dimensions {
-        // TODO
-        return Dimensions(0, 0)
-    }
-
     /*
-     * PREPARE
+     * PACK
+     * (test me first)
      */
 
-    private data class CalculatedSizes(
+    data class CalculatedSizes(
         val minimumHorizontal: Units.Fixed,
         val minimumVertical: Units.Fixed,
         val desiredHorizontal: Units.Fixed,
@@ -23,6 +18,15 @@ class LayoutEngine {
         val maximumHorizontal: Units.Fixed?,
         val maximumVertical: Units.Fixed?
     ) {
+        constructor() : this(
+            Units.scalar(0),
+            Units.scalar(0),
+            Units.scalar(0),
+            Units.scalar(0),
+            Units.scalar(0),
+            Units.scalar(0)
+        )
+
         operator fun plus(other: CalculatedSizes): CalculatedSizes {
             return CalculatedSizes(
                 // For minimum and desired sizes, the totals are the sum of the two values
@@ -93,7 +97,7 @@ class LayoutEngine {
 
     private val componentSizeCache: MutableMap<UIComponent, CalculatedSizes> = mutableMapOf()
 
-    private fun calculateSize(component: UIComponent): CalculatedSizes {
+    fun pack(component: UIComponent): CalculatedSizes {
         val calculatedSizes = if (component is UIContainer) {
             calculateContainerSize(component)
         } else {
@@ -109,7 +113,7 @@ class LayoutEngine {
         // Calculate the total sizes for the contents of the container, ignoring the sizes of the container.  The
         // container's padding is added to the content sizes to form the full content sizes.
         val contentSizes = container.components.asSequence()
-            .map { component -> calculateSize(component) + calculateMargins(component) }
+            .map { component -> pack(component) + calculateMargins(component) }
             .reduce { acc, current -> acc.coalesce(current, container.orientation) } + calculatePadding(container)
 
         // For the minimum and desired sizes, the final size is the minimum of the container's configured size and the
@@ -187,7 +191,7 @@ class LayoutEngine {
     }
 
     /*
-     * PACK
+     * SETTLE ON-AXIS
      */
 
     private val finalComponentHorizontal: MutableMap<UIComponent, Int> = mutableMapOf()
@@ -217,6 +221,19 @@ class LayoutEngine {
                 }
             } else {
                 // TODO Distribute dimension among children and recurse
+                val componentSizes = component.components.asSequence().associateWith { child ->
+                    val childSize = componentSizeCache.getOrDefault(child, CalculatedSizes()).minimum(orientation)
+                    (childSize.value + (childSize.ratio * dimension)).toInt()
+                }.toMutableMap()
+                var remainingSize = dimension - componentSizes.values.sum()
+                if (remainingSize < 0) {
+                    // Scrollbar required
+                } else {
+                    // Distribute remaining by determining the smallest amount required to get any component to its
+                    // desired size.  Then, determine if that amount can be added to all components not yet at their
+                    // desired sizes.  When components have reached their desired sizes, check if there are any "fill"
+                    // components and grow them proportionally to fill the remaining space.
+                }
             }
         } else {
             // TODO How to get value from component itself?
@@ -225,6 +242,6 @@ class LayoutEngine {
     }
 
     /*
-     * SETTLE
+     * SETTLE OFF-AXIS
      */
 }
